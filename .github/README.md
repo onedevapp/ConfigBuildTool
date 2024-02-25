@@ -62,10 +62,10 @@ For IOS:
 
 ## ScreenShots
 
-![DefaultScreen](ScreenShots\custom_build_tool_default_screen.png)
-![EditConfigScreen](ScreenShots\custom_build_tool_editconfig_screen.png)
-![ReleaseScreen](ScreenShots\custom_build_tool_release_screen.png)
-![GameConfigSelector Editor](ScreenShots\gameconfig_so_editor.png)
+![DefaultScreen](ScreenShots/custom_build_tool_default_screen.png)
+![EditConfigScreen](ScreenShots/custom_build_tool_editconfig_screen.png)
+![ReleaseScreen](ScreenShots/custom_build_tool_release_screen.png)
+![GameConfigSelector Editor](ScreenShots/gameconfig_so_editor.png)
 
 <br>
 
