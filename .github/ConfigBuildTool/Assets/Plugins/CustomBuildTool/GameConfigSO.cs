@@ -51,7 +51,10 @@ namespace OneDevApp.GameConfig
         void OnEnable()
         {
             Instance = this;
-            configPropertiesDic = configProperties.ToDictionary(item => item.key, item => item.value);
+            if(configProperties.Length > 0)
+                configPropertiesDic = configProperties.ToDictionary(item => item.key, item => item.value);
+            else
+                configPropertiesDic = new Dictionary<string, string>();
         }
     }
 
