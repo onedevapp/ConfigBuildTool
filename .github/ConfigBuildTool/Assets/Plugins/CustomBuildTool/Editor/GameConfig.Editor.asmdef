@@ -1,0 +1,22 @@
+{
+    "name": "GameConfig.Editor",
+    "rootNamespace": "OneDevApp.GameConfig",
+    "references": [
+        "GUID:005740d5a6b1a5f4b9b886f78d9a1b92",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:69448af7b92c7f342b298e06a37122aa"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

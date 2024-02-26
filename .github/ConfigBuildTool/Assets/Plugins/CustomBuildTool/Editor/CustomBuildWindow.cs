@@ -24,10 +24,11 @@ namespace OneDevApp.GameConfig
         const string addressableSettingsAsset = "Assets/AddressableAssetsData/AddressableAssetSettings.asset";
         const string configAssetsDefaultPath = "Assets/_GameConfigs";
 
-#if UNITY_IOS
         const string firebaseDeeplinkFolderPath = "Assets/Firebase/m2repository/com/google/firebase/firebase-dynamic-links-unity";
         const string firebaseMessagingFolderPath = "Assets/Firebase/m2repository/com/google/firebase/firebase-messaging-unity";
         static bool iOSDeeplinkRequired;
+
+#if UNITY_IOS
         static string iOSDeeplinkUrl;
 #endif
         static GameConfigSO lastUsedConfigSO;
@@ -58,7 +59,7 @@ namespace OneDevApp.GameConfig
         */
         string[] addressablesProfileOptions = new string[0];
         string[] addressablesBuildScriptOptions = new string[0];
-        string[] addressablesBuildScriptPath = new string[0];
+        //string[] addressablesBuildScriptPath = new string[0];
         int buildScriptIndex = 0;
         int profileIndex = 0;
 
@@ -99,7 +100,7 @@ namespace OneDevApp.GameConfig
         bool isAllInputValid = true;
         string errorInfoTxt;
         bool editingText;
-        Vector2 scrollPos;
+        Vector2 scrollPos;        
 
 
         [MenuItem("Tools/Custom Build Tool")]
@@ -186,16 +187,22 @@ namespace OneDevApp.GameConfig
             {
                 addressablesProfileOptions = addressableSettings.profileSettings.GetAllProfileNames().ToArray();
 
-                string[] guidsBuildScript = AssetDatabase.FindAssets("t:AddressableAssetSettingsDefaultObject");
-                int buildScriptCount = guidsBuildScript.Length;
-                addressablesBuildScriptOptions = new string[buildScriptCount];
-                addressablesBuildScriptPath = new string[buildScriptCount];
+                // string[] guidsBuildScript = AssetDatabase.FindAssets("t:BuildScriptBase");
+                // int buildScriptCount = guidsBuildScript.Length;
+                // addressablesBuildScriptOptions = new string[buildScriptCount];
+                // addressablesBuildScriptPath = new string[buildScriptCount];
+                // for (int n = 0; n < buildScriptCount; n++)
+                // {
+                //     var path = AssetDatabase.GUIDToAssetPath(guidsBuildScript[n]);
+                //     addressablesBuildScriptOptions[n] = Path.GetFileName(path);
+                //     addressablesBuildScriptPath[n] = path;
+                // }
+                int buildScriptCount = addressableSettings.DataBuilders.Count;
                 for (int n = 0; n < buildScriptCount; n++)
                 {
-                    var path = AssetDatabase.GUIDToAssetPath(guidsBuildScript[n]);
-                    addressablesBuildScriptOptions[n] = Path.GetFileName(path);
-                    addressablesBuildScriptPath[n] = path;
+                    addressablesBuildScriptOptions[n] = addressableSettings.DataBuilders[n].name;
                 }
+
             }else
             {                
                 Debug.LogError($"{addressableSettingsAsset} couldn't be found or isn't a settings object.");
@@ -226,8 +233,8 @@ namespace OneDevApp.GameConfig
             s_Andy_Config = string.IsNullOrEmpty(buildConfigProperties.get("andy_Prod_GameConfigSO_Path")) ? 0 : System.Array.FindIndex(configsOptions, x => x.Equals(buildConfigProperties.get("andy_Prod_GameConfigSO_Path")));            
             s_IOS_Config = string.IsNullOrEmpty(buildConfigProperties.get("ios_Prod_GameConfigSO_Path")) ? 0 : System.Array.FindIndex(configsOptions, x => x.Equals(buildConfigProperties.get("ios_Prod_GameConfigSO_Path")));
 
-            s_Andy_AA_BS = string.IsNullOrEmpty(buildConfigProperties.get("andy_Prod_Addressable_BuildScript")) ? 0 : System.Array.FindIndex(addressablesBuildScriptPath, x => x.Equals(buildConfigProperties.get("andy_Prod_Addressable_BuildScript")));
-            s_IOS_AA_BS = string.IsNullOrEmpty(buildConfigProperties.get("ios_Prod_Addressable_BuildScript")) ? 0 : System.Array.FindIndex(addressablesBuildScriptPath, x => x.Equals(buildConfigProperties.get("ios_Prod_Addressable_BuildScript")));
+            s_Andy_AA_BS = string.IsNullOrEmpty(buildConfigProperties.get("andy_Prod_Addressable_BuildScript")) ? 0 : System.Array.FindIndex(addressablesBuildScriptOptions, x => x.Equals(buildConfigProperties.get("andy_Prod_Addressable_BuildScript")));
+            s_IOS_AA_BS = string.IsNullOrEmpty(buildConfigProperties.get("ios_Prod_Addressable_BuildScript")) ? 0 : System.Array.FindIndex(addressablesBuildScriptOptions, x => x.Equals(buildConfigProperties.get("ios_Prod_Addressable_BuildScript")));
             
             s_Andy_AA_Profile = string.IsNullOrEmpty(buildConfigProperties.get("andy_Prod_Adderssable_Profile")) ? 0 : System.Array.FindIndex(addressablesProfileOptions, x => x.Equals(buildConfigProperties.get("andy_Prod_Adderssable_Profile")));
             s_IOS_AA_Profile = string.IsNullOrEmpty(buildConfigProperties.get("ios_Prod_Adderssable_Profile")) ? 0 : System.Array.FindIndex(addressablesProfileOptions, x => x.Equals(buildConfigProperties.get("ios_Prod_Adderssable_Profile")));
@@ -242,6 +249,8 @@ namespace OneDevApp.GameConfig
             k_keyAliasName = keyStoreProperties.get("keyAliasName", "");
             k_keyStorePass = keyStoreProperties.get("keyStorePass", "");
             k_keyAliasPass = keyStoreProperties.get("keyAliasPass", "");
+            
+            iOSDeeplinkRequired = AssetDatabase.IsValidFolder(firebaseDeeplinkFolderPath);
         }
 
         void CreateNewGameConfig()
@@ -327,6 +336,7 @@ namespace OneDevApp.GameConfig
                 s_IsGame = EditorGUILayout.Toggle("Android IsGame: ", s_IsGame);
                 GUILayout.Space(8);
 
+                EditorGUI.BeginChangeCheck();
                 EditorGUILayout.LabelField("IOS Specific KeyStore Config: ");
                 GUILayout.Space(4);
                 EditorGUILayout.BeginHorizontal();
@@ -338,16 +348,30 @@ namespace OneDevApp.GameConfig
                 s_choose_BF = EditorGUILayout.Toggle("Show Build Folder Dialog: ", s_choose_BF);
                 GUILayout.Space(25);
 
+                EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Android KeyStore Config: ");
+                
+                if (GUILayout.Button("Browse", GUILayout.Width(60)))
+                {
+                    string path = EditorUtility.OpenFilePanel("Select Existing KeyStore", "", "");
+                    if (!string.IsNullOrEmpty(path)){
+                        k_keyStoreName = path;
+                    }
+                }
+                
+                if (GUILayout.Button("Clear", GUILayout.Width(60)))
+                {
+                    k_keyStoreName = "";
+                    k_keyAliasName = "";
+                    k_keyStorePass = "";
+                    k_keyAliasPass = "";
+                }
+
+                EditorGUILayout.EndHorizontal();
                 GUILayout.Space(4);
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("KeyStore Path: ");
                 k_keyStoreName = EditorGUILayout.TextField(k_keyStoreName, textFieldStyle);
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("KeyStore AliasName: ");
-                k_keyAliasName = EditorGUILayout.TextField(k_keyAliasName, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
@@ -356,49 +380,59 @@ namespace OneDevApp.GameConfig
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("KeyStore AliasName: ");
+                k_keyAliasName = EditorGUILayout.TextField(k_keyAliasName, textFieldStyle);
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("KeyStore Alias Password: ");
                 k_keyAliasPass = EditorGUILayout.TextField(k_keyAliasPass, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
                 GUILayout.Space(8);
 
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Save to Config Files"))
+                if (EditorGUI.EndChangeCheck())
                 {
-                    if(!string.IsNullOrEmpty(k_keyStoreName) && validateKeyStoreAvailablity() && !System.IO.File.Exists(Path.GetFullPath(k_keyStoreName)))
-                    {
-                        Debug.LogError("Keystore file not found");
-                    }
-                    else
-                    {
-                        buildConfigProperties.set("gameConfigs_Path", s_GameConfig);
-                        buildConfigProperties.set("andy_Prod_GameConfigSO_Path", configsOptions[s_Andy_Config]);
-                        buildConfigProperties.set("ios_Prod_GameConfigSO_Path", configsOptions[s_IOS_Config]);
-                        buildConfigProperties.set("andy_Prod_Addressable_BuildScript", addressablesBuildScriptPath[s_Andy_AA_BS]);
-                        buildConfigProperties.set("ios_Prod_Addressable_BuildScript", addressablesBuildScriptPath[s_IOS_AA_BS]);
-                        buildConfigProperties.set("andy_Prod_Adderssable_Profile", addressablesProfileOptions[s_Andy_AA_Profile]);
-                        buildConfigProperties.set("ios_Prod_Adderssable_Profile", addressablesProfileOptions[s_IOS_AA_Profile]);
-                        buildConfigProperties.set("choose_Build_Folder", s_choose_BF ? 1 : 0);
-                        buildConfigProperties.set("andy_Prod_Split_Binary", s_Andy_SplitBinary ? 1 : 0);
-                        buildConfigProperties.set("andy_IsGame", s_IsGame ? 1 : 0);
-                        buildConfigProperties.set("ios_DeepLink_URL", s_IOS_DL_Url);
+                    // the value has changed
+                    (isAllInputValid, errorInfoTxt) = validateAllInputs();
+                }
 
-    #if UNITY_ANDROID
-                        prodGameConfigSOPath = configsOptions[s_Andy_Config];
-    #elif UNITY_IOS
-                        prodGameConfigSOPath = configsOptions[s_IOS_Config];
-                        iOSDeeplinkUrl = s_IOS_DL_Url;
-    #endif
+                EditorGUILayout.BeginHorizontal();
+                    
+                EditorGUI.BeginDisabledGroup(!isAllInputValid);
+                if (GUILayout.Button("Save to Config Files"))
+                {                    
+                    buildConfigProperties.set("gameConfigs_Path", s_GameConfig);
+                    buildConfigProperties.set("andy_Prod_GameConfigSO_Path", configsOptions[s_Andy_Config]);
+                    buildConfigProperties.set("ios_Prod_GameConfigSO_Path", configsOptions[s_IOS_Config]);
+                    buildConfigProperties.set("andy_Prod_Addressable_BuildScript", addressablesBuildScriptOptions[s_Andy_AA_BS]);
+                    buildConfigProperties.set("ios_Prod_Addressable_BuildScript", addressablesBuildScriptOptions[s_IOS_AA_BS]);
+                    buildConfigProperties.set("andy_Prod_Adderssable_Profile", addressablesProfileOptions[s_Andy_AA_Profile]);
+                    buildConfigProperties.set("ios_Prod_Adderssable_Profile", addressablesProfileOptions[s_IOS_AA_Profile]);
+                    buildConfigProperties.set("choose_Build_Folder", s_choose_BF ? 1 : 0);
+                    buildConfigProperties.set("andy_Prod_Split_Binary", s_Andy_SplitBinary ? 1 : 0);
+                    buildConfigProperties.set("andy_IsGame", s_IsGame ? 1 : 0);
+                    buildConfigProperties.set("ios_DeepLink_URL", s_IOS_DL_Url);
 
+#if UNITY_ANDROID
+                    prodGameConfigSOPath = configsOptions[s_Andy_Config];
+#elif UNITY_IOS
+                    prodGameConfigSOPath = configsOptions[s_IOS_Config];
+                    iOSDeeplinkUrl = s_IOS_DL_Url;
+#endif
+
+                    buildConfigProperties.Save();
+
+                    if(!string.IsNullOrEmpty(k_keyStoreName))
+                    {
                         keyStoreProperties.set("keyStorePath", k_keyStoreName);
                         keyStoreProperties.set("keyAliasName", k_keyAliasName);
                         keyStoreProperties.set("keyStorePass", k_keyStorePass);
                         keyStoreProperties.set("keyAliasPass", k_keyAliasPass);
 
                         keyStoreProperties.Save();
-                        buildConfigProperties.Save();
-
-                        showEditPropertiesPanel = false;
                     }
+
+                    showEditPropertiesPanel = false;
                 }
 
                 if(buildConfigProperties.IsPropertiesLoaded())
@@ -406,11 +440,18 @@ namespace OneDevApp.GameConfig
                     if (GUILayout.Button("Cancel"))
                     {
                         showEditPropertiesPanel = false;
+                        isAllInputValid = true;
+                        iOSDeeplinkRequired = false;
                     }
                 }
                 
+                EditorGUI.EndDisabledGroup();
                 EditorGUILayout.EndHorizontal();
 
+                if (!isAllInputValid)
+                {
+                    EditorGUILayout.HelpBox(errorInfoTxt, MessageType.Error);
+                }
                 EditorGUILayout.EndScrollView();
                 EditorGUILayout.EndVertical();
                 return;
@@ -435,6 +476,8 @@ namespace OneDevApp.GameConfig
             {                
                 SetDefaultConfigValues();
                 showEditPropertiesPanel = true;
+                isAllInputValid = true;
+                iOSDeeplinkRequired = false;
             }
 
             GUILayout.FlexibleSpace();
@@ -734,38 +777,51 @@ namespace OneDevApp.GameConfig
 
         (bool, string) validateAllInputs()
         {
+            if(showEditPropertiesPanel)
+            {
+                if(!string.IsNullOrEmpty(k_keyStoreName) && !File.Exists(Path.GetFullPath(k_keyStoreName)))
+                    return (false, "Keystore file not found at path at "+ Path.GetFullPath(k_keyStoreName));
+                else if(!string.IsNullOrEmpty(k_keyStoreName) && (string.IsNullOrEmpty(k_keyAliasName) || string.IsNullOrEmpty(k_keyStorePass) || string.IsNullOrEmpty(k_keyAliasPass)))                
+                    return (false, "All keystore values are mandatory");
+                else
+                    return iOSDeeplinkRequired ? (!string.IsNullOrEmpty(s_IOS_DL_Url), "Deeplink Url cant be empty") : (true, string.Empty);
+            }
+            else
+            {
+
 #if UNITY_ANDROID
 
-            if (isProductionBuild && bundleVersionCode > versionCodesIntArray[3] && string.IsNullOrEmpty(TrimMultiline(changesLogTxt.Trim())))
-            {
-                return (false, "Changes logs cant be empty");
-            }
-            else if (useKeyStore && !validateKeyStoreAvailablity())
-                return (false, "Either Keystore is not enabled or Keystore properties file not found or properties doesnt have respective values");
-            else
-                return (true, "");
+                if (isProductionBuild && bundleVersionCode > versionCodesIntArray[3] && string.IsNullOrEmpty(TrimMultiline(changesLogTxt.Trim())))
+                {
+                    return (false, "Changes logs cant be empty");
+                }
+                else if (useKeyStore && !validateKeyStoreAvailablity())
+                    return (false, "Either Keystore is not enabled or Keystore properties file not found or properties doesnt have respective values");
+                else
+                    return (true, "");
 
 
 #elif UNITY_IOS
-            if (isProductionBuild && bundleVersionCode > versionCodesIntArray[3] && string.IsNullOrEmpty(TrimMultiline(changesLogTxt.Trim())))
-                return (false, "Changes logs cant be empty");
-            else
-                return iOSDeeplinkRequired ? (!string.IsNullOrEmpty(iOSDeeplinkUrl), "deeplinks cant be empty") : (true, string.Empty);
+                if (isProductionBuild && bundleVersionCode > versionCodesIntArray[3] && string.IsNullOrEmpty(TrimMultiline(changesLogTxt.Trim())))
+                    return (false, "Changes logs cant be empty");
+                else
+                    return iOSDeeplinkRequired ? (!string.IsNullOrEmpty(iOSDeeplinkUrl), "deeplinks cant be empty") : (true, string.Empty);
 #elif UNITY_STANDALONE_OSX
-            return (false, "Unsupported platform");
+                return (false, "Unsupported platform");
 #elif UNITY_STANDALONE_WIN
-            return (false, "Unsupported platform");
+                return (false, "Unsupported platform");
 #endif
+            }
         }
 
         bool validateKeyStoreAvailablity()
         {
             return
-                (keyStoreProperties.IsPropertiesLoaded() &&
-                    (!string.IsNullOrEmpty(keyStoreProperties.get("keyStorePath")) &&
+                !string.IsNullOrEmpty(keyStoreProperties.get("keyStorePath")) &&
                     !string.IsNullOrEmpty(keyStoreProperties.get("keyAliasName")) &&
                     !string.IsNullOrEmpty(keyStoreProperties.get("keyStorePass")) &&
-                    !string.IsNullOrEmpty(keyStoreProperties.get("keyAliasPass")))
+                    !string.IsNullOrEmpty(keyStoreProperties.get("keyAliasPass")) && 
+                    File.Exists(Path.GetFullPath(keyStoreProperties.get("keyStoreName"))
                 );
         }
 
@@ -949,30 +1005,32 @@ namespace OneDevApp.GameConfig
         }
 #endif
 
-        void setProfile(string profile)
+        bool BuildAddressables(string profile_name, string build_script)
         {
-            string profileId = addressableSettings.profileSettings.GetProfileId(profile);
+            AddressableAssetSettings.CleanPlayerContent(AddressableAssetSettingsDefaultObject.Settings.ActivePlayerDataBuilder);
+
+            string profileId = addressableSettings.profileSettings.GetProfileId(profile_name);
             if (string.IsNullOrEmpty(profileId))
-                Debug.LogWarning($"Couldn't find a profile named, {profile}, " +
+            {
+                Debug.LogWarning($"Couldn't find a profile named, {profile_name}, " +
                                  $"using current profile instead.");
-            else
-                addressableSettings.activeProfileId = profileId;
-        }
+                return false;
+            }
+            
+            addressableSettings.activeProfileId = profileId;
 
-        void setBuilder(IDataBuilder builder)
-        {
-            int index = addressableSettings.DataBuilders.IndexOf((ScriptableObject)builder);
-
-            if (index > 0)
-                addressableSettings.ActivePlayerDataBuilderIndex = index;
-            else
-                Debug.LogWarning($"{builder} must be added to the " +
+            int index = addressableSettings.DataBuilders.FindIndex(x => x.name.Equals(build_script));
+            
+            if (index < 0)
+            {
+                
+                Debug.LogWarning($"{build_script} must be added to the " +
                                  $"DataBuilders list before it can be made " +
                                  $"active. Using last run builder instead.");
-        }
-
-        bool buildAddressableContent()
-        {
+                return false;
+            }
+            addressableSettings.ActivePlayerDataBuilderIndex = index;
+            
             AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult result);
             bool success = string.IsNullOrEmpty(result.Error);
 
@@ -981,26 +1039,6 @@ namespace OneDevApp.GameConfig
                 Debug.LogError("Addressables build error encountered: " + result.Error);
             }
             return success;
-        }
-
-        bool BuildAddressables(string profile_name, string build_script)
-        {
-            AddressableAssetSettings.CleanPlayerContent(
-                   AddressableAssetSettingsDefaultObject.Settings.ActivePlayerDataBuilder);
-                   
-            setProfile(profile_name);
-            IDataBuilder builderScript
-              = AssetDatabase.LoadAssetAtPath<ScriptableObject>(build_script) as IDataBuilder;
-
-            if (builderScript == null)
-            {
-                Debug.LogError(build_script + " couldn't be found or isn't a build script.");
-                return false;
-            }
-
-            setBuilder(builderScript);
-
-            return buildAddressableContent();
         }
 
         void BuildAddressablesAndPlayer(string profile_name, string build_script)
