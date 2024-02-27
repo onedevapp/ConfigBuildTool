@@ -1,4 +1,4 @@
-# Unity Custom Build Tool
+# Unity Config Build Tool
 This unity plugin Automate project build for Android and IOS using config propertites, enable logs, version number etc.
 
 
