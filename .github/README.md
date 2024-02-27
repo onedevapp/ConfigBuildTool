@@ -3,24 +3,20 @@ This unity plugin Automate project build for Android and IOS using config proper
 
 
 ## Installation
-There are 3 ways to install this plugin:
+via Package Manager (**Add package from git url**):
 
-1. clone/download this repository and move the Plugins folder to your Unity project's Assets folder
-2. via Package Manager (**Add package from git url**):
-
-    - `https://github.com/onedevapp/ConfigBuildTool.git`
-3. via Package Manager (add the following line to **Packages/manifest.json**):
-    - `"com.onedevapp.configbuildtool": "https://github.com/onedevapp/ConfigBuildTool.git",`
-
+```
+https://github.com/onedevapp/ConfigBuildTool.git
+```
 <br>
 
 ## Why would I need this?
-Ever wanted to take a production build either for Android or IOS without setting up additional work or check list to pre or post build with OneClick?, <b>Yes OneClick thats possible with this custom build tool.</b> Not just production, one can take build of their choice with this tool. How it works? This tool creates CustomBuildConfig.properties and keystore.properties (Optional) in the ProjectSettings folder, where CustomBuildConfig properties file has all the production level settings and keystore properties file has production keystore properties where these properties will be used when "<b>Release/Prod Build</b>" Toggle is checked in the custom build tool else options selected in the tool will be used. Available Options are
+Ever wanted to take a production build either for Android or IOS without setting up additional work or check list to pre or post build with OneClick?, <b>Yes OneClick thats possible with this custom build tool.</b> Not just production, one can take build of their choice with this tool. <br><br> <b> How it works?</b> This tool creates CustomBuildConfig.properties and keystore.properties (Optional) in the ProjectSettings folder, where CustomBuildConfig properties file has all the production level settings and keystore properties file has production keystore properties where these properties will be used when "<b>Release/Prod Build</b>" Toggle is checked in the custom build tool else options selected in the tool will be used. Available Options are
 
 ### Pre-Build
 * <b>Application.version</b> - Customizable with "Major.Minor.Patch" version automate with incremental "PlayerSettings.Android.bundleVersionCode" for Android or "PlayerSettings.iOS.buildNumber" for IOS 
 * <b>Changes Log</b> - Track whenever a version changes happened with mandatory changes log info about the build.
-* <b>GameConfigSO</b> - An Editor level and Runtime Config SO with API Url and App Version Code where for Android its "PlayerSettings.Android.bundleVersionCode" and for IOS its "PlayerSettings.iOS.buildNumber". Note that GameConfigSO uses singleton instance and will be added to PreloadedAssets automatically. 
+* <b>GameConfigSO</b> - An Editor level and Runtime Config SO with Base API Url, App Version Code where for Android its "PlayerSettings.Android.bundleVersionCode" and for IOS its "PlayerSettings.iOS.buildNumber" along with Additional Config Propertites with KeyValue Pair. Note that GameConfigSO uses singleton instance and will be added to PreloadedAssets automatically, so no need to load SO file manually or from resouce folder. 
 * <b>Addressable</b> - Build Script and Profile can be selectable/ switchable
 * <b>Android Specific</b> :
     * This tool builds only AAB for production else APK with or without keystore

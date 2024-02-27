@@ -153,8 +153,8 @@ namespace OneDevApp.GameConfig
             buildConfigProperties = new PropertiesLoader(buildConfigFilePath);
             keyStoreProperties = new PropertiesLoader(keyStoreFilePath);
 
-            ReloadAddressables();
             ReloadAllConfigs();
+            ReloadAddressables();
             
             showEditPropertiesPanel = !buildConfigProperties.IsPropertiesLoaded() || (addressableSettings == null) || (configsOptions.Length <= 0);
 
@@ -187,17 +187,8 @@ namespace OneDevApp.GameConfig
             {
                 addressablesProfileOptions = addressableSettings.profileSettings.GetAllProfileNames().ToArray();
 
-                // string[] guidsBuildScript = AssetDatabase.FindAssets("t:BuildScriptBase");
-                // int buildScriptCount = guidsBuildScript.Length;
-                // addressablesBuildScriptOptions = new string[buildScriptCount];
-                // addressablesBuildScriptPath = new string[buildScriptCount];
-                // for (int n = 0; n < buildScriptCount; n++)
-                // {
-                //     var path = AssetDatabase.GUIDToAssetPath(guidsBuildScript[n]);
-                //     addressablesBuildScriptOptions[n] = Path.GetFileName(path);
-                //     addressablesBuildScriptPath[n] = path;
-                // }
                 int buildScriptCount = addressableSettings.DataBuilders.Count;
+                addressablesBuildScriptOptions = new string[buildScriptCount];
                 for (int n = 0; n < buildScriptCount; n++)
                 {
                     addressablesBuildScriptOptions[n] = addressableSettings.DataBuilders[n].name;
@@ -276,8 +267,8 @@ namespace OneDevApp.GameConfig
             
             if (showEditPropertiesPanel)
             {
-                EditorGUILayout.LabelField("Required Production Build Config values", lableStyle);
-                GUILayout.Space(8);
+                EditorGUILayout.LabelField("Required Production Build Config Values", lableStyle);
+                GUILayout.Space(12);
                 EditorGUILayout.LabelField("GameConfigs SO Specific Config: ");
                 GUILayout.Space(4);
                 EditorGUILayout.BeginHorizontal();
@@ -320,14 +311,15 @@ namespace OneDevApp.GameConfig
 
                 s_Andy_Config = EditorGUILayout.Popup("Android Prod Configs", s_Andy_Config, configsOptions);
                 s_IOS_Config = EditorGUILayout.Popup("IOS Prod Configs Path", s_IOS_Config, configsOptions);
-                GUILayout.Space(8);
+                GUILayout.Space(12);
 
                 EditorGUILayout.LabelField("Addressable Specific Config: ");
                 GUILayout.Space(4);
-                s_Andy_AA_BS = EditorGUILayout.Popup("Android Prod BuildScript: ", s_Andy_AA_BS, addressablesBuildScriptOptions);
-                s_IOS_AA_BS = EditorGUILayout.Popup("IOS Prod BuildScript: ", s_IOS_AA_BS, addressablesBuildScriptOptions);
                 s_Andy_AA_Profile = EditorGUILayout.Popup("Android Prod Profile", s_Andy_AA_Profile, addressablesProfileOptions);
                 s_IOS_AA_Profile = EditorGUILayout.Popup("IOS Prod Profile", s_IOS_AA_Profile, addressablesProfileOptions);
+                GUILayout.Space(4);
+                s_Andy_AA_BS = EditorGUILayout.Popup("Android Prod BuildScript: ", s_Andy_AA_BS, addressablesBuildScriptOptions);
+                s_IOS_AA_BS = EditorGUILayout.Popup("IOS Prod BuildScript: ", s_IOS_AA_BS, addressablesBuildScriptOptions);
                 GUILayout.Space(8);
 
                 EditorGUILayout.LabelField("Android Specific Config: ");
@@ -337,13 +329,13 @@ namespace OneDevApp.GameConfig
                 GUILayout.Space(8);
 
                 EditorGUI.BeginChangeCheck();
-                EditorGUILayout.LabelField("IOS Specific KeyStore Config: ");
+                EditorGUILayout.LabelField("IOS Specific Config: ");
                 GUILayout.Space(4);
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("IOS DeepLink URL: ");
+                EditorGUILayout.LabelField("IOS DeepLink URL: ", GUILayout.Width(150));
                 s_IOS_DL_Url = EditorGUILayout.TextField(s_IOS_DL_Url, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
-                GUILayout.Space(8);
+                GUILayout.Space(12);
 
                 s_choose_BF = EditorGUILayout.Toggle("Show Build Folder Dialog: ", s_choose_BF);
                 GUILayout.Space(25);
@@ -370,25 +362,27 @@ namespace OneDevApp.GameConfig
                 EditorGUILayout.EndHorizontal();
                 GUILayout.Space(4);
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("KeyStore Path: ");
-                k_keyStoreName = EditorGUILayout.TextField(k_keyStoreName, textFieldStyle);
+                EditorGUILayout.LabelField("KeyStore Path: ", GUILayout.Width(150));
+                EditorGUILayout.LabelField(k_keyStoreName);
                 EditorGUILayout.EndHorizontal();
 
+                EditorGUI.BeginDisabledGroup(string.IsNullOrEmpty(k_keyStoreName));
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("KeyStore Password: ");
+                EditorGUILayout.LabelField("KeyStore Password: ", GUILayout.Width(150));
                 k_keyStorePass = EditorGUILayout.TextField(k_keyStorePass, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("KeyStore AliasName: ");
+                EditorGUILayout.LabelField("KeyStore AliasName: ", GUILayout.Width(150));
                 k_keyAliasName = EditorGUILayout.TextField(k_keyAliasName, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("KeyStore Alias Password: ");
+                EditorGUILayout.LabelField("KeyStore Alias Password: ", GUILayout.Width(150));
                 k_keyAliasPass = EditorGUILayout.TextField(k_keyAliasPass, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
                 GUILayout.Space(8);
+                EditorGUI.EndDisabledGroup();
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -421,16 +415,13 @@ namespace OneDevApp.GameConfig
 #endif
 
                     buildConfigProperties.Save();
+                    
+                    keyStoreProperties.set("keyStorePath", k_keyStoreName);
+                    keyStoreProperties.set("keyAliasName", k_keyAliasName);
+                    keyStoreProperties.set("keyStorePass", k_keyStorePass);
+                    keyStoreProperties.set("keyAliasPass", k_keyAliasPass);
 
-                    if(!string.IsNullOrEmpty(k_keyStoreName))
-                    {
-                        keyStoreProperties.set("keyStorePath", k_keyStoreName);
-                        keyStoreProperties.set("keyAliasName", k_keyAliasName);
-                        keyStoreProperties.set("keyStorePass", k_keyStorePass);
-                        keyStoreProperties.set("keyAliasPass", k_keyAliasPass);
-
-                        keyStoreProperties.Save();
-                    }
+                    keyStoreProperties.Save();
 
                     showEditPropertiesPanel = false;
                 }
@@ -471,7 +462,7 @@ namespace OneDevApp.GameConfig
                 }
             }
 
-            // Create GameConfig button
+            // Edit GameConfig button
             if (GUILayout.Button("Edit Properties"))
             {                
                 SetDefaultConfigValues();
@@ -1151,7 +1142,6 @@ namespace OneDevApp.GameConfig
             }
             File.Copy(tempfile, changesLogFilepath, true);
             File.Delete(tempfile);
-
         }
     }
 }

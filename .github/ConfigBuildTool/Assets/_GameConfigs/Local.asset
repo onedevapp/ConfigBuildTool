@@ -15,3 +15,8 @@ MonoBehaviour:
   baseApiUrl: www.google.com
   appServerCode: 0
   appVersionCode: 1
+  configProperties:
+  - key: FirstKey
+    value: FirstValue
+  - key: AnotherKey
+    value: AnotherValue

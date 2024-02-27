@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -29,7 +28,6 @@ namespace OneDevApp.GameConfig
         [SerializeField] private int appVersionCode;
         [SerializeField] private AdditionalConfigProperties[] configProperties;
 
-        IReadOnlyDictionary<string, string> configPropertiesDic;
 
         public string GetBaseApiUrl() { return baseApiUrl; }
         public AppServerCode GetAppServerCode() { return appServerCode; }
@@ -42,19 +40,15 @@ namespace OneDevApp.GameConfig
 
         public string GetConfigProperty(string key)
         {
-            if(configPropertiesDic.ContainsKey(key))
-                return configPropertiesDic[key];
-            else
-                return string.Empty;
+            return ( from item in configProperties
+                where item.key.Equals(key)
+                select item).FirstOrDefault().value;
         }
 
         void OnEnable()
         {
-            Instance = this;
-            if(configProperties.Length > 0)
-                configPropertiesDic = configProperties.ToDictionary(item => item.key, item => item.value);
-            else
-                configPropertiesDic = new Dictionary<string, string>();
+            if(Instance == null)
+                Instance = this;
         }
     }
 
