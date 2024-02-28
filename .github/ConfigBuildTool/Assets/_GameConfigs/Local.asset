@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf9f533fc0f7c4ee280ec3cc14feeb3e, type: 3}
   m_Name: Local
   m_EditorClassIdentifier: 
-  baseApiUrl: www.google.com
+  baseApiUrl: localhost:8080
   appServerCode: 0
   appVersionCode: 1
   configProperties:

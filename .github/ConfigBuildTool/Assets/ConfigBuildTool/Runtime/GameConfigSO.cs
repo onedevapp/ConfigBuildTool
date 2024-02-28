@@ -47,8 +47,7 @@ namespace OneDevApp.GameConfig
 
         void OnEnable()
         {
-            if(Instance == null)
-                Instance = this;
+            Instance = this;
         }
     }
 

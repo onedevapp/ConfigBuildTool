@@ -581,9 +581,7 @@ namespace OneDevApp.GameConfig
                     GUILayout.Space(8);
 
                     EditorGUILayout.BeginHorizontal();
-                    //appVersion = EditorGUILayout.TextField("Version: ", appVersion);
                     EditorGUILayout.LabelField("Version Code: ");
-                    //GUILayout.Label(System.String.Join(".", versionCodesArray), style, GUILayout.Width(30));
                     appVersion = string.Concat(appMajorVersionCode, ".", string.Format("{0:D2}", appMinorVersionCode), ".", string.Format("{0:D2}", appPatchVersionCode));
                     GUILayout.Label(appVersion, lableStyle, GUILayout.Width(200));
                     GUILayout.FlexibleSpace();
@@ -609,7 +607,7 @@ namespace OneDevApp.GameConfig
                 if (isProductionBuild)
                 {
 #if UNITY_ANDROID
-                    useKeyStore = buildAAB = EditorGUILayout.Toggle("Build ABB: ", buildAAB);
+                    useKeyStore = buildAAB = EditorGUILayout.Toggle("Build AAB: ", buildAAB);
 #endif
                 }
                 else
@@ -639,14 +637,6 @@ namespace OneDevApp.GameConfig
                 {
                     isAllInputValid = true;
                     editingText = false;
-
-/*#if UNITY_IOS
-                    if (iOSDeeplinkRequired && string.IsNullOrEmpty(iOSDeeplinkUrl))
-                    {
-                        Debug.Log("DeepLinkURL cant be empty!");
-                        isAllInputValid = false;
-                    }
-#endif*/
                 }
 
                 GUILayout.Space(8);
@@ -752,6 +742,8 @@ namespace OneDevApp.GameConfig
                 if (GUILayout.Button("Addressable Only"))
                 {
                     setAddresablesValues();
+                    // Remove this if you don't want to close the window when starting a build
+                    Close();
                     BuildAddressables(adderssableProfileName, addreaasbleBuildScriptPath);
                 }
             }
@@ -797,9 +789,7 @@ namespace OneDevApp.GameConfig
                     return (false, "Changes logs cant be empty");
                 else
                     return iOSDeeplinkRequired ? (!string.IsNullOrEmpty(iOSDeeplinkUrl), "deeplinks cant be empty") : (true, string.Empty);
-#elif UNITY_STANDALONE_OSX
-                return (false, "Unsupported platform");
-#elif UNITY_STANDALONE_WIN
+#else
                 return (false, "Unsupported platform");
 #endif
             }
@@ -823,23 +813,6 @@ namespace OneDevApp.GameConfig
             prefixFilePath = string.Empty;
             finalPath = string.Empty;
 
-#if UNITY_ANDROID
-            prefixFilePath = string.Concat(Application.productName, "_v", PlayerSettings.Android.bundleVersionCode.ToString(), "_", buildServerCode);
-#elif UNITY_IOS
-            prefixFilePath = string.Concat(Application.productName, "_v", PlayerSettings.iOS.buildNumber.ToString(), "_", buildServerCode);
-#endif
-
-            if (buildConfigProperties.get("choose_Build_Folder").Equals("1"))
-            {
-#if UNITY_ANDROID
-                finalPath = EditorUtility.SaveFilePanel("Choose Location of Built Game", "", prefixFilePath, (isProductionBuild ? ".aab" : ".apk"));
-                if(string.IsNullOrEmpty(finalPath)) return false;
-#elif UNITY_IOS
-                finalPath = EditorUtility.SaveFilePanel("Choose Location of Built Game", "", prefixFilePath, "");
-                if(string.IsNullOrEmpty(finalPath)) return false;
-#endif
-            }
-
             foreach (var item in gameConfigSOs)
             {
                 item.SetAppVersionCode(bundleVersionCode);
@@ -849,18 +822,38 @@ namespace OneDevApp.GameConfig
             if (isProductionBuild)
             {
                 selectedConfigSO = AssetDatabase.LoadAssetAtPath<GameConfigSO>(prodGameConfigSOPath);
-
-                PlayerSettings.SplashScreen.showUnityLogo = false;
-                UpdateChangesLogTxt(TrimMultiline(changesLogTxt.Trim()));
             }
             else
             {
                 selectedConfigSO = gameConfigSOs[configIndex];
             }
 
-            setAddresablesValues();
-
             buildServerCode = selectedConfigSO.GetAppServerCode().ToString();
+
+#if UNITY_ANDROID
+            prefixFilePath = string.Concat(Application.productName, "_v", bundleVersionCode.ToString(), "_", buildServerCode);
+#elif UNITY_IOS
+            prefixFilePath = string.Concat(Application.productName, "_v", bundleVersionCode.ToString(), "_", buildServerCode);
+#endif
+
+            if (buildConfigProperties.get("choose_Build_Folder").Equals("1"))
+            {
+#if UNITY_ANDROID
+                finalPath = EditorUtility.SaveFilePanel("Choose Location of Built Game", "", prefixFilePath, (buildAAB ? ".aab" : ".apk"));
+                if(string.IsNullOrEmpty(finalPath)) return false;
+#elif UNITY_IOS
+                finalPath = EditorUtility.SaveFilePanel("Choose Location of Built Game", "", prefixFilePath, "");
+                if(string.IsNullOrEmpty(finalPath)) return false;
+#endif
+            }
+
+
+            if (isProductionBuild)
+            {
+                PlayerSettings.SplashScreen.showUnityLogo = false;
+                UpdateChangesLogTxt(TrimMultiline(changesLogTxt.Trim()));
+            }
+            setAddresablesValues();
 
             // Add the config asset to the PreloadedAssets
             var preloadedAssets = UnityEditor.PlayerSettings.GetPreloadedAssets().ToList();
@@ -1067,7 +1060,7 @@ namespace OneDevApp.GameConfig
                     Directory.CreateDirectory(finalPath);
 
 #if UNITY_ANDROID
-                finalPath = Path.Combine(finalPath, string.Concat(prefixFilePath, isProductionBuild ? ".aab" : ".apk"));
+                finalPath = Path.Combine(finalPath, string.Concat(prefixFilePath, buildAAB ? ".aab" : ".apk"));
 #elif UNITY_IOS
                 finalPath = Path.Combine(finalPath, prefixFilePath);
 #endif
@@ -1076,7 +1069,7 @@ namespace OneDevApp.GameConfig
             else
             {
 #if UNITY_ANDROID
-                finalPath = string.Concat(finalPath, isProductionBuild ? ".aab" : ".apk");
+                finalPath = string.Concat(finalPath, buildAAB ? ".aab" : ".apk");
 #endif
             }
 

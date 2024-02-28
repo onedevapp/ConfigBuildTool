@@ -1,7 +1,7 @@
 {
   "name": "com.onedevapp.configbuildtool",
   "displayName": "ConfigBuildTool",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "documentationUrl": "https://github.com/onedevapp/ConfigBuildTool/blob/main/.github/README.md",
   "changelogUrl": "",
   "licensesUrl": "https://github.com/onedevapp/ConfigBuildTool/blob/main/LICENSE",
@@ -17,5 +17,5 @@
         "path": "Samples~/Samples"
     }
   ],
-  "description": "This unity plugin Automate project build for Android and IOS using config propertites, enable logs, version number etc..\n\n"
+  "description": "This unity plugin Automate project build for Android and IOS using pre-config propertites during pre-build, post-build and during gameplay.\n\n"
 }

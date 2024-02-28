@@ -2,7 +2,7 @@ using System.Diagnostics;
 using UnityEngine;
 
 /**
-*  Modified version of UnityDebug (Only Class Name)
+*  Modified version of UnityDebug
 *  https://github.com/JoebRogers/UnityDebug
 *  UnityDebug is a small script to wrap Unity's Debug logging calls to enforce strict calling intent on which debugging calls make it into compiled builds.
 */

@@ -9,6 +9,16 @@ namespace OneDevApp.GameConfig
 
 #if UNITY_EDITOR
         [SerializeField] private string configSOPathEditor;
+
+        private void Awake()
+        {
+            //Why this? Durign script reload all scriptable objects loaded in memory and OnEnable() will called and causes GameConfigSO to shows differently than the selected one.
+            //https://forum.unity.com/threads/scriptableobject-awake-onenable-ondisable-ondestroy-demystified.1415565/#post-8895705
+            //https://forum.unity.com/threads/scriptableobject-behaviour-discussion-how-scriptable-objects-work.541212/
+            GameConfigSO gameConfigSO = AssetDatabase.LoadAssetAtPath<GameConfigSO>(configSOPathEditor);
+            GameConfigSO.Instance = gameConfigSO;
+            DebugX.LogFormat("{0} GameConfig Loaded!", GameConfigSO.Instance.name);
+        }
 #endif
 
     }
