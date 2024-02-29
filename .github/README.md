@@ -16,7 +16,7 @@ Ever wanted to take a production build either for Android or IOS without setting
 ### Pre-Build
 * <b>Application.version</b> - Customizable with "Major.Minor.Patch" version automate with incremental "PlayerSettings.Android.bundleVersionCode" for Android or "PlayerSettings.iOS.buildNumber" for IOS 
 * <b>Changes Log</b> - Track whenever a version changes happened with mandatory changes log info about the build.
-* <b>GameConfigSO</b> - A ScriptableObject file configurator for Local/Production URLs, App version code etc., can be selectable/switchable. [Read More](#On-Build) 
+* <b>GameConfigSO</b> - A ScriptableObject file configurator for Local/Production URLs, App version code etc., can be selectable/switchable. [Read More](#On-GamePlay) 
 * <b>Addressable</b> - Build Script and Profile can be selectable/ switchable
 * <b>Android Specific</b> :
     * This tool builds AAB / APK
@@ -42,7 +42,7 @@ For IOS:
 
 </br>
 
-### On Build
+### On GamePlay
 
 <b>GameConfigSO</b> - An Editor level and Runtime Config SO with Base API Url, App Version Code where for Android its "PlayerSettings.Android.bundleVersionCode" and for IOS its "PlayerSettings.iOS.buildNumber" along with Additional Config Propertites with KeyValue Pair. 
 
