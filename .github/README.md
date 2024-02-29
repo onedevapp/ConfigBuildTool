@@ -61,7 +61,7 @@ GameConfigSO.Instance.GetConfigProperty("Key")  //Returns Value based on key pro
 </br>
 
 ### Debug Logs
-Replacing any calls to Debug. (or UnityEngine.Debug.) with "<b>DebugX.</b>" Thats it! the arguments have been left as-is, with any additions being made as overloads, so nothing should need to change about your current project set up at all.
+Replace any calls to Debug. (or UnityEngine.Debug.) with "<b>DebugX.</b>" Thats it! the arguments have been left as-is, with any additions being made as overloads, so nothing should need to change about your current project set up at all.
 
 ```C#
 DebugX.Log("My Log");   //Not just Log, wrapper functions for all Unity's Debug logging calls
