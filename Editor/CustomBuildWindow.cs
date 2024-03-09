@@ -797,12 +797,12 @@ namespace OneDevApp.GameConfig
 
         bool validateKeyStoreAvailablity()
         {
-            return
+            return !showEditPropertiesPanel && useKeyStore &&                
                 !string.IsNullOrEmpty(keyStoreProperties.get("keyStorePath")) &&
                     !string.IsNullOrEmpty(keyStoreProperties.get("keyAliasName")) &&
                     !string.IsNullOrEmpty(keyStoreProperties.get("keyStorePass")) &&
                     !string.IsNullOrEmpty(keyStoreProperties.get("keyAliasPass")) && 
-                    File.Exists(Path.GetFullPath(keyStoreProperties.get("keyStoreName"))
+                    File.Exists(Path.GetFullPath(keyStoreProperties.get("keyStorePath"))
                 );
         }
 
