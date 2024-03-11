@@ -100,7 +100,7 @@ namespace OneDevApp.GameConfig
         bool isAllInputValid = true;
         string errorInfoTxt;
         bool editingText;
-        Vector2 scrollPos;        
+        Vector2 scrollPos;
 
 
         [MenuItem("Tools/Custom Build Tool")]
@@ -145,7 +145,7 @@ namespace OneDevApp.GameConfig
             versionCodesIntArray[3] = bundleVersionCode;
 
             addressableSettings = AssetDatabase.LoadAssetAtPath<ScriptableObject>(addressableSettingsAsset) as AddressableAssetSettings;
-                
+
             changesLogFilepath = Path.Combine(Path.GetDirectoryName(Application.dataPath), "CHANGELOG.md");
             keyStoreFilePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), "ProjectSettings", "keystore.properties");
             buildConfigFilePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), "ProjectSettings", "CustomBuildConfig.properties");
@@ -155,7 +155,7 @@ namespace OneDevApp.GameConfig
 
             ReloadAllConfigs();
             ReloadAddressables();
-            
+
             showEditPropertiesPanel = !buildConfigProperties.IsPropertiesLoaded() || (addressableSettings == null) || (configsOptions.Length <= 0);
 
             if (showEditPropertiesPanel)
@@ -163,7 +163,7 @@ namespace OneDevApp.GameConfig
                 SetDefaultConfigValues();
                 Debug.Log("buildConfigProperties not loaded path::" + buildConfigFilePath);
             }
-            
+
         }
 
         void OnFocus()
@@ -183,7 +183,7 @@ namespace OneDevApp.GameConfig
             iOSDeeplinkUrl = buildConfigProperties.get("ios_DeepLink_URL");
 #endif
 
-            if(addressableSettings != null)
+            if (addressableSettings != null)
             {
                 addressablesProfileOptions = addressableSettings.profileSettings.GetAllProfileNames().ToArray();
 
@@ -194,8 +194,9 @@ namespace OneDevApp.GameConfig
                     addressablesBuildScriptOptions[n] = addressableSettings.DataBuilders[n].name;
                 }
 
-            }else
-            {                
+            }
+            else
+            {
                 Debug.LogError($"{addressableSettingsAsset} couldn't be found or isn't a settings object.");
             }
         }
@@ -221,12 +222,12 @@ namespace OneDevApp.GameConfig
         {
             s_GameConfig = buildConfigProperties.get("gameConfigs_Path", configAssetsDefaultPath);
 
-            s_Andy_Config = string.IsNullOrEmpty(buildConfigProperties.get("andy_Prod_GameConfigSO_Path")) ? 0 : System.Array.FindIndex(configsOptions, x => x.Equals(buildConfigProperties.get("andy_Prod_GameConfigSO_Path")));            
+            s_Andy_Config = string.IsNullOrEmpty(buildConfigProperties.get("andy_Prod_GameConfigSO_Path")) ? 0 : System.Array.FindIndex(configsOptions, x => x.Equals(buildConfigProperties.get("andy_Prod_GameConfigSO_Path")));
             s_IOS_Config = string.IsNullOrEmpty(buildConfigProperties.get("ios_Prod_GameConfigSO_Path")) ? 0 : System.Array.FindIndex(configsOptions, x => x.Equals(buildConfigProperties.get("ios_Prod_GameConfigSO_Path")));
 
             s_Andy_AA_BS = string.IsNullOrEmpty(buildConfigProperties.get("andy_Prod_Addressable_BuildScript")) ? 0 : System.Array.FindIndex(addressablesBuildScriptOptions, x => x.Equals(buildConfigProperties.get("andy_Prod_Addressable_BuildScript")));
             s_IOS_AA_BS = string.IsNullOrEmpty(buildConfigProperties.get("ios_Prod_Addressable_BuildScript")) ? 0 : System.Array.FindIndex(addressablesBuildScriptOptions, x => x.Equals(buildConfigProperties.get("ios_Prod_Addressable_BuildScript")));
-            
+
             s_Andy_AA_Profile = string.IsNullOrEmpty(buildConfigProperties.get("andy_Prod_Adderssable_Profile")) ? 0 : System.Array.FindIndex(addressablesProfileOptions, x => x.Equals(buildConfigProperties.get("andy_Prod_Adderssable_Profile")));
             s_IOS_AA_Profile = string.IsNullOrEmpty(buildConfigProperties.get("ios_Prod_Adderssable_Profile")) ? 0 : System.Array.FindIndex(addressablesProfileOptions, x => x.Equals(buildConfigProperties.get("ios_Prod_Adderssable_Profile")));
 
@@ -240,7 +241,7 @@ namespace OneDevApp.GameConfig
             k_keyAliasName = keyStoreProperties.get("keyAliasName", "");
             k_keyStorePass = keyStoreProperties.get("keyStorePass", "");
             k_keyAliasPass = keyStoreProperties.get("keyAliasPass", "");
-            
+
             iOSDeeplinkRequired = AssetDatabase.IsValidFolder(firebaseDeeplinkFolderPath);
         }
 
@@ -252,7 +253,7 @@ namespace OneDevApp.GameConfig
                 var configObject = CreateInstance<GameConfigSO>();
                 UnityEditor.AssetDatabase.CreateAsset(configObject, path);
                 ReloadAllConfigs();
-                if(addressableSettings != null)
+                if (addressableSettings != null)
                     ReloadAddressables();
             }
         }
@@ -260,11 +261,11 @@ namespace OneDevApp.GameConfig
         private void OnGUI()
         {
             GUIStyle lableStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleLeft };
-            GUIStyle textFieldStyle = new GUIStyle(GUI.skin.textArea) { alignment = TextAnchor.MiddleLeft, wordWrap = false};
-            
+            GUIStyle textFieldStyle = new GUIStyle(GUI.skin.textArea) { alignment = TextAnchor.MiddleLeft, wordWrap = false };
+
             EditorGUILayout.BeginVertical();
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-            
+
             if (showEditPropertiesPanel)
             {
                 EditorGUILayout.LabelField("Required Production Build Config Values", lableStyle);
@@ -288,24 +289,24 @@ namespace OneDevApp.GameConfig
                     EditorGUILayout.EndScrollView();
                     EditorGUILayout.EndVertical();
                     return;
-                }               
+                }
                 else
                 {
                     EditorGUILayout.LabelField(s_GameConfig);
                     EditorGUILayout.EndHorizontal();
                 }
-                
-                if(addressableSettings == null)
-                {                    
+
+                if (addressableSettings == null)
+                {
                     GUILayout.Space(8);
                     EditorGUILayout.LabelField("Addressable settings required, Click refresh once created.");
                     if (GUILayout.Button("Refresh"))
-                    {                        
+                    {
                         ReloadAddressables();
                     }
 
                     EditorGUILayout.EndScrollView();
-                    EditorGUILayout.EndVertical();                    
+                    EditorGUILayout.EndVertical();
                     return;
                 }
 
@@ -342,15 +343,16 @@ namespace OneDevApp.GameConfig
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Android KeyStore Config: ");
-                
+
                 if (GUILayout.Button("Browse", GUILayout.Width(60)))
                 {
                     string path = EditorUtility.OpenFilePanel("Select Existing KeyStore", "", "");
-                    if (!string.IsNullOrEmpty(path)){
+                    if (!string.IsNullOrEmpty(path))
+                    {
                         k_keyStoreName = path;
                     }
                 }
-                
+
                 if (GUILayout.Button("Clear", GUILayout.Width(60)))
                 {
                     k_keyStoreName = "";
@@ -391,10 +393,10 @@ namespace OneDevApp.GameConfig
                 }
 
                 EditorGUILayout.BeginHorizontal();
-                    
+
                 EditorGUI.BeginDisabledGroup(!isAllInputValid);
                 if (GUILayout.Button("Save to Config Files"))
-                {                    
+                {
                     buildConfigProperties.set("gameConfigs_Path", s_GameConfig);
                     buildConfigProperties.set("andy_Prod_GameConfigSO_Path", configsOptions[s_Andy_Config]);
                     buildConfigProperties.set("ios_Prod_GameConfigSO_Path", configsOptions[s_IOS_Config]);
@@ -415,7 +417,7 @@ namespace OneDevApp.GameConfig
 #endif
 
                     buildConfigProperties.Save();
-                    
+
                     keyStoreProperties.set("keyStorePath", k_keyStoreName);
                     keyStoreProperties.set("keyAliasName", k_keyAliasName);
                     keyStoreProperties.set("keyStorePass", k_keyStorePass);
@@ -426,7 +428,7 @@ namespace OneDevApp.GameConfig
                     showEditPropertiesPanel = false;
                 }
 
-                if(buildConfigProperties.IsPropertiesLoaded())
+                if (buildConfigProperties.IsPropertiesLoaded())
                 {
                     if (GUILayout.Button("Cancel"))
                     {
@@ -435,7 +437,7 @@ namespace OneDevApp.GameConfig
                         iOSDeeplinkRequired = false;
                     }
                 }
-                
+
                 EditorGUI.EndDisabledGroup();
                 EditorGUILayout.EndHorizontal();
 
@@ -458,13 +460,13 @@ namespace OneDevApp.GameConfig
                 {
                     var configObject = CreateInstance<GameConfigSO>();
                     UnityEditor.AssetDatabase.CreateAsset(configObject, path);
-                    ReloadAllConfigs(); 
+                    ReloadAllConfigs();
                 }
             }
 
             // Edit GameConfig button
             if (GUILayout.Button("Edit Properties"))
-            {                
+            {
                 SetDefaultConfigValues();
                 showEditPropertiesPanel = true;
                 isAllInputValid = true;
@@ -607,13 +609,15 @@ namespace OneDevApp.GameConfig
                 if (isProductionBuild)
                 {
 #if UNITY_ANDROID
-                    useKeyStore = buildAAB = EditorGUILayout.Toggle("Build AAB: ", buildAAB);
+                    useKeyStore = true;
+                    buildAAB = EditorGUILayout.Toggle("Build AAB: ", buildAAB);
 #endif
                 }
                 else
                 {
 #if UNITY_ANDROID
                     useKeyStore = EditorGUILayout.Toggle("Use KeyStore: ", useKeyStore);
+                    buildAAB = false;
 #endif
                     enableLogs = EditorGUILayout.Toggle("Enable Logs: ", enableLogs);
 
@@ -655,10 +659,10 @@ namespace OneDevApp.GameConfig
                     PlayerSettings.Android.bundleVersionCode = bundleVersionCode;
 
                     EditorUserBuildSettings.buildAppBundle = buildAAB;
-                    
+
                     if (isProductionBuild)
                     {
-                        PlayerSettings.Android.useAPKExpansionFiles = buildConfigProperties.get("andy_Prod_Split_Binary").Equals("1"); //Split Application Binary
+                        PlayerSettings.Android.useAPKExpansionFiles = buildAAB ? buildConfigProperties.get("andy_Prod_Split_Binary").Equals("1") : false; //Split Application Binary
                         PlayerSettings.Android.androidIsGame = buildConfigProperties.get("andy_IsGame").Equals("1"); //Split Application Binary                        
                     }
 
@@ -682,6 +686,9 @@ namespace OneDevApp.GameConfig
                                 isAllInputValid = false;
                                 errorInfoTxt = "Keystore file not found at path";
                                 Debug.LogError("Keystore file not found at path :: " + fullPath);
+                                EditorGUI.EndDisabledGroup();
+                                EditorGUILayout.EndScrollView();
+                                EditorGUILayout.EndVertical();
                                 return;
                             }
                         }
@@ -694,7 +701,7 @@ namespace OneDevApp.GameConfig
 #elif UNITY_IOS
                     PlayerSettings.iOS.buildNumber = bundleVersionCode.ToString();
 #endif
-                    if(saveBuildConfig())
+                    if (saveBuildConfig())
                     {
                         // Remove this if you don't want to close the window when starting a build
                         Close();
@@ -710,24 +717,29 @@ namespace OneDevApp.GameConfig
                 // Ignore button
                 if (GUILayout.Button("Ignore and Build (with Addressable)"))
                 {
-                    if (saveBuildConfig())
-                    {
-                        // Remove this if you don't want to close the window when starting a build
-                        Close();
-                        BuildAddressablesAndPlayer(adderssableProfileName, addreaasbleBuildScriptPath);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("User cancelled the build");
-                    }
+                    setAddresablesValues();
+                    Close();
+                    BuildAddressablesAndPlayer(adderssableProfileName, addreaasbleBuildScriptPath);
                 }
 
                 // Build Only button
                 if (GUILayout.Button("Ignore and Build Only"))
                 {
-                    if (saveBuildConfig())
+
+#if UNITY_ANDROID
+                    prefixFilePath = string.Concat(Application.productName, "_v", bundleVersionCode.ToString(), "_", buildServerCode);
+#elif UNITY_IOS
+                    prefixFilePath = string.Concat(Application.productName, "_v", bundleVersionCode.ToString(), "_", buildServerCode);
+#endif
+
+
+#if UNITY_ANDROID
+                    finalPath = EditorUtility.SaveFilePanel("Choose Location of Built Game", "", prefixFilePath, (buildAAB ? ".aab" : ".apk"));
+#elif UNITY_IOS
+                        finalPath = EditorUtility.SaveFilePanel("Choose Location of Built Game", "", prefixFilePath, "");
+#endif
+                    if (!string.IsNullOrEmpty(finalPath))
                     {
-                        // Remove this if you don't want to close the window when starting a build
                         Close();
                         BuildPlayerOnly();
                     }
@@ -742,7 +754,6 @@ namespace OneDevApp.GameConfig
                 if (GUILayout.Button("Addressable Only"))
                 {
                     setAddresablesValues();
-                    // Remove this if you don't want to close the window when starting a build
                     Close();
                     BuildAddressables(adderssableProfileName, addreaasbleBuildScriptPath);
                 }
@@ -752,7 +763,7 @@ namespace OneDevApp.GameConfig
             {
                 EditorGUILayout.HelpBox(errorInfoTxt, MessageType.Error);
             }
-            
+
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();
         }
@@ -760,11 +771,11 @@ namespace OneDevApp.GameConfig
 
         (bool, string) validateAllInputs()
         {
-            if(showEditPropertiesPanel)
+            if (showEditPropertiesPanel)
             {
-                if(!string.IsNullOrEmpty(k_keyStoreName) && !File.Exists(Path.GetFullPath(k_keyStoreName)))
-                    return (false, "Keystore file not found at path at "+ Path.GetFullPath(k_keyStoreName));
-                else if(!string.IsNullOrEmpty(k_keyStoreName) && (string.IsNullOrEmpty(k_keyAliasName) || string.IsNullOrEmpty(k_keyStorePass) || string.IsNullOrEmpty(k_keyAliasPass)))                
+                if (!string.IsNullOrEmpty(k_keyStoreName) && !File.Exists(Path.GetFullPath(k_keyStoreName)))
+                    return (false, "Keystore file not found at path at " + Path.GetFullPath(k_keyStoreName));
+                else if (!string.IsNullOrEmpty(k_keyStoreName) && (string.IsNullOrEmpty(k_keyAliasName) || string.IsNullOrEmpty(k_keyStorePass) || string.IsNullOrEmpty(k_keyAliasPass)))
                     return (false, "All keystore values are mandatory");
                 else
                     return iOSDeeplinkRequired ? (!string.IsNullOrEmpty(s_IOS_DL_Url), "Deeplink Url cant be empty") : (true, string.Empty);
@@ -795,18 +806,18 @@ namespace OneDevApp.GameConfig
             }
         }
 
+#if UNITY_ANDROID
         bool validateKeyStoreAvailablity()
         {
-            return !showEditPropertiesPanel && useKeyStore &&                
+            return !showEditPropertiesPanel && useKeyStore &&
                 !string.IsNullOrEmpty(keyStoreProperties.get("keyStorePath")) &&
                     !string.IsNullOrEmpty(keyStoreProperties.get("keyAliasName")) &&
                     !string.IsNullOrEmpty(keyStoreProperties.get("keyStorePass")) &&
-                    !string.IsNullOrEmpty(keyStoreProperties.get("keyAliasPass")) && 
+                    !string.IsNullOrEmpty(keyStoreProperties.get("keyAliasPass")) &&
                     File.Exists(Path.GetFullPath(keyStoreProperties.get("keyStorePath"))
                 );
         }
-
-
+#endif
 
         bool saveBuildConfig()
         {
@@ -817,13 +828,13 @@ namespace OneDevApp.GameConfig
             {
                 item.SetAppVersionCode(bundleVersionCode);
                 saveData(item);
+                if (isProductionBuild && item.name.Equals(prodGameConfigSOPath))
+                {
+                    selectedConfigSO = item;
+                }
             }
 
-            if (isProductionBuild)
-            {
-                selectedConfigSO = AssetDatabase.LoadAssetAtPath<GameConfigSO>(prodGameConfigSOPath);
-            }
-            else
+            if (!isProductionBuild)
             {
                 selectedConfigSO = gameConfigSOs[configIndex];
             }
@@ -840,7 +851,7 @@ namespace OneDevApp.GameConfig
             {
 #if UNITY_ANDROID
                 finalPath = EditorUtility.SaveFilePanel("Choose Location of Built Game", "", prefixFilePath, (buildAAB ? ".aab" : ".apk"));
-                if(string.IsNullOrEmpty(finalPath)) return false;
+                if (string.IsNullOrEmpty(finalPath)) return false;
 #elif UNITY_IOS
                 finalPath = EditorUtility.SaveFilePanel("Choose Location of Built Game", "", prefixFilePath, "");
                 if(string.IsNullOrEmpty(finalPath)) return false;
@@ -858,9 +869,9 @@ namespace OneDevApp.GameConfig
             // Add the config asset to the PreloadedAssets
             var preloadedAssets = UnityEditor.PlayerSettings.GetPreloadedAssets().ToList();
 
-            for (int i = preloadedAssets.Count() - 1 ; i >= 0; i--)
+            for (int i = preloadedAssets.Count() - 1; i >= 0; i--)
             {
-                if(preloadedAssets[i] is GameConfigSO)
+                if (preloadedAssets[i] is GameConfigSO)
                 {
                     lastUsedConfigSO = preloadedAssets[i] as GameConfigSO;
                     preloadedAssets.RemoveAt(i);
@@ -870,13 +881,14 @@ namespace OneDevApp.GameConfig
 
             preloadedAssets.Add(selectedConfigSO);
             UnityEditor.PlayerSettings.SetPreloadedAssets(preloadedAssets.ToArray());
-
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
             return true;
         }
 
         void setAddresablesValues()
         {
-            
+
             if (isProductionBuild)
             {
 
@@ -907,7 +919,7 @@ namespace OneDevApp.GameConfig
         public static void OnPostProcessBuild(BuildTarget buildTarget, string pathToBuiltProject)
         {
 
-            if(lastUsedConfigSO != null)
+            if (lastUsedConfigSO != null)
             {
                 // Add the config asset to the PreloadedAssets
                 var preloadedAssets = UnityEditor.PlayerSettings.GetPreloadedAssets().ToList();
@@ -923,7 +935,7 @@ namespace OneDevApp.GameConfig
                 preloadedAssets.Add(lastUsedConfigSO);
                 UnityEditor.PlayerSettings.SetPreloadedAssets(preloadedAssets.ToArray());
             }
-            
+
 
 #if UNITY_ANDROID
             PlayerSettings.Android.useCustomKeystore = false;
@@ -941,6 +953,8 @@ namespace OneDevApp.GameConfig
                 AddCapabilities(buildTarget, pathToBuiltProject);
             }
 #endif
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
         }
 
@@ -1000,21 +1014,21 @@ namespace OneDevApp.GameConfig
                                  $"using current profile instead.");
                 return false;
             }
-            
+
             addressableSettings.activeProfileId = profileId;
 
             int index = addressableSettings.DataBuilders.FindIndex(x => x.name.Equals(build_script));
-            
+
             if (index < 0)
             {
-                
+
                 Debug.LogWarning($"{build_script} must be added to the " +
                                  $"DataBuilders list before it can be made " +
                                  $"active. Using last run builder instead.");
                 return false;
             }
             addressableSettings.ActivePlayerDataBuilderIndex = index;
-            
+
             AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult result);
             bool success = string.IsNullOrEmpty(result.Error);
 
@@ -1075,7 +1089,7 @@ namespace OneDevApp.GameConfig
 
             playerOptions.locationPathName = finalPath;
 
-            if(enableLogs)
+            if (enableLogs)
                 playerOptions.extraScriptingDefines = new[] { "ENABLE_LOGS" };
 
             if (File.Exists(finalPath))
